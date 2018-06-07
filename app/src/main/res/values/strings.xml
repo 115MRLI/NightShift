@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">深夜档</string>
+    <string name="home_page_str">影享</string>
+    <string name="attention_str">追剧</string>
+    <string name="inform_str">综艺</string>
+    <string name="myself_str">我的</string>
+</resources>
