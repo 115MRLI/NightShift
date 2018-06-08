@@ -27,6 +27,7 @@ import shift.night.base.BaseActivity;
 import shift.night.model.http.MenuModel;
 import shift.night.util.NightShiftUtils;
 import shift.night.view.contract.HomeContract;
+import shift.night.view.fragment.MovieFragment;
 
 public class HomeActivity extends BaseActivity implements HomeContract {
     @BindView(R.id.frame)
@@ -87,6 +88,7 @@ public class HomeActivity extends BaseActivity implements HomeContract {
         super.initEvent();
         MenuModel menuModel = new MenuModel();
         menuModel.getMenu();
+        jumpFragment(new MovieFragment());
     }
 
     @Override
