@@ -24,7 +24,7 @@ import rx.Observer;
 import rx.Subscription;
 import shift.night.R;
 import shift.night.base.BaseActivity;
-import shift.night.model.http.MenuModel;
+import shift.night.model.http.TypeModel;
 import shift.night.util.NightShiftUtils;
 import shift.night.view.contract.HomeContract;
 import shift.night.view.fragment.MovieFragment;
@@ -86,8 +86,6 @@ public class HomeActivity extends BaseActivity implements HomeContract {
     @Override
     protected void initEvent() {
         super.initEvent();
-        MenuModel menuModel = new MenuModel();
-        menuModel.getMenu();
         jumpFragment(new MovieFragment());
     }
 

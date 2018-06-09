@@ -1,10 +1,9 @@
 package shift.night.view.fragment;
-
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import butterknife.BindView;
 import shift.night.R;
 import shift.night.base.BaseFragment;
 import shift.night.model.bean.TitleMenu;
-import shift.night.util.NightShiftUtils;
 import shift.night.view.adapter.MyPagerAdapter;
 
 /**
@@ -74,7 +72,9 @@ public class MovieFragment extends BaseFragment {
         titleMenus.add(new TitleMenu("战争片", "mlist/9.html"));
         fragments = new ArrayList<>();
         for (int i = 0; i < titleMenus.size(); i++) {
-            fragments.add(new MyselfFragment());
+            ClassificationDetailsFragment fragment = new ClassificationDetailsFragment();
+            fragment.setTypeStr(titleMenus.get(i));
+            fragments.add(fragment);
         }
     }
 
@@ -96,24 +96,9 @@ public class MovieFragment extends BaseFragment {
                 TextView menulayout = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.title_menu_itme, titleMenu, false);
                 menulayout.setText(titleMenus.get(i).getName());
                 tab.setCustomView(menulayout);
-                if (tab.getCustomView() != null) {
-                    View tabView = (View) tab.getCustomView().getParent();
-                    tabView.setTag(i);
-                    tabView.setOnClickListener(mTabOnClickListener);
-                }
             }
         }
     }
 
-    /**
-     * tabLayout点击事件
-     */
-    private View.OnClickListener mTabOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            int pos = (int) view.getTag();
-            NightShiftUtils.showToast(titleMenus.get(pos).getName());
-        }
-    };
 
 }

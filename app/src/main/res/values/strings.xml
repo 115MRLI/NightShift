@@ -4,4 +4,6 @@
     <string name="attention_str">追剧</string>
     <string name="inform_str">综艺</string>
     <string name="myself_str">我的</string>
+    <string name="Month_ranking">月排行</string>
+    <string name="list">动作片</string>
 </resources>

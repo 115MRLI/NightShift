@@ -52,4 +52,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.2'
     /*TabLayout  的使用*/
     compile 'com.android.support:design:25.3.1'
+
+    /*轮播图*/
+    compile 'com.youth.banner:banner:1.4.10'
 }

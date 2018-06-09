@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -15,7 +17,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import shift.night.R;
 import shift.night.app.App;
+import shift.night.util.ThreadUtils;
 
 /**
  * @name VideoDome
@@ -29,11 +33,12 @@ public abstract class BaseActivity extends FragmentActivity {
     //弹窗
     private MaterialDialog.Builder mBuilder;
     private MaterialDialog mMaterialDialog;
+    private static final int MSG_DISMISS_MATERIAL_PROGRESS = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       Log.e(this.getClass()+"", this.getClass().getName() + "------>onCreate");
+        Log.e(this.getClass() + "", this.getClass().getName() + "------>onCreate");
         setContentView(getLayout());
         App.getInstance().registerActivity(this);
         mContext = this;
@@ -46,25 +51,25 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e(this.getClass()+"", this.getClass().getName() + "------>onStart");
+        Log.e(this.getClass() + "", this.getClass().getName() + "------>onStart");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(this.getClass()+"", this.getClass().getName() + "------>onPause");
+        Log.e(this.getClass() + "", this.getClass().getName() + "------>onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e(this.getClass()+"", this.getClass().getName() + "------>onStop");
+        Log.e(this.getClass() + "", this.getClass().getName() + "------>onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e(this.getClass()+"",this.getClass().getName() + "------>onDestroy");
+        Log.e(this.getClass() + "", this.getClass().getName() + "------>onDestroy");
         if (mUnBinder != null)
             mUnBinder.unbind();
         App.getInstance().unregisterActivity(this);
@@ -88,6 +93,7 @@ public abstract class BaseActivity extends FragmentActivity {
             win.setAttributes(winParams);
         }
     }
+
     protected void setWindowFullScreen() {
         //设置全屏
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -97,6 +103,7 @@ public abstract class BaseActivity extends FragmentActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
+
     /**
      * 展示弹窗
      *
@@ -140,6 +147,72 @@ public abstract class BaseActivity extends FragmentActivity {
             mMaterialDialog = null;
         }
     }
+
+    private MaterialDialog dialog;
+
+
+    /**
+     * Material样式进度条 Progress dialog.
+     *
+     * @param title the title
+     */
+    public void progressDialog(final String title) {
+        if (!this.isFinishing()) {
+            ThreadUtils.runOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (dialog == null) {
+                        dialog = new MaterialDialog.Builder(mContext)
+                                .title(title)
+                                .canceledOnTouchOutside(false).cancelable(false)
+                                .customView(R.layout.custom_view, true)
+                                .show();
+                        // 发送延时消息,在handler里面操作,隐藏progressview
+                        mHandler.sendEmptyMessageDelayed(MSG_DISMISS_MATERIAL_PROGRESS, Integer.valueOf(6000));
+                    } else {
+                        dialog.setTitle(title);
+                        if (!dialog.isShowing()) {
+                            dialog.show();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 关闭进度弹窗
+     */
+    public void cancelDialog() {
+        ThreadUtils.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+            }
+        });
+    }
+
+    /**
+     * 创建一个handler处理隐藏
+     */
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_DISMISS_MATERIAL_PROGRESS:
+                    cancelDialog();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    };
 
     //
     protected abstract int getLayout();

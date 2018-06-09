@@ -3,6 +3,8 @@ package shift.night.base;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,6 +17,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import shift.night.R;
+import shift.night.util.ThreadUtils;
 
 /**
  * @name VideoDome
@@ -32,10 +36,12 @@ public abstract class BaseFragment extends Fragment {
     //弹窗
     private MaterialDialog.Builder mBuilder;
     private MaterialDialog mMaterialDialog;
+    private static final int MSG_DISMISS_MATERIAL_PROGRESS = 1;
+
     @Override
     public void onAttach(Context mContext) {
         super.onAttach(mContext);
-        Log.d(this.getClass()+"", getName() + "------>onAttach");
+        Log.d(this.getClass() + "", getName() + "------>onAttach");
         if (mContext != null) {
             this.mContext = mContext;
         } else {
@@ -46,12 +52,12 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(this.getClass()+"", getName() + "------>onCreate");
+        Log.d(this.getClass() + "", getName() + "------>onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(this.getClass()+"", getName() + "------>onCreateView");
+        Log.d(this.getClass() + "", getName() + "------>onCreateView");
         if (rootView == null) {
             rootView = inflater.inflate(getLayout(), container, false);
         }
@@ -67,26 +73,26 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(this.getClass()+"", getName() + "------>onActivityCreated");
+        Log.d(this.getClass() + "", getName() + "------>onActivityCreated");
         initEvent();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(this.getClass()+"", getName() + "------>onStart");
+        Log.d(this.getClass() + "", getName() + "------>onStart");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(this.getClass()+"", getName() + "------>onResume");
+        Log.d(this.getClass() + "", getName() + "------>onResume");
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(this.getClass()+"", getName() + "------>onViewCreated");
+        Log.d(this.getClass() + "", getName() + "------>onViewCreated");
         isViewPrepared = true;
         lazyFetchDataIfPrepared();
     }
@@ -94,19 +100,19 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(this.getClass()+"", getName() + "------>onPause");
+        Log.d(this.getClass() + "", getName() + "------>onPause");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(this.getClass()+"", getName() + "------>onStop");
+        Log.d(this.getClass() + "", getName() + "------>onStop");
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(this.getClass()+"", getName() + "------>onDestroyView");
+        Log.d(this.getClass() + "", getName() + "------>onDestroyView");
         // view被销毁后，将可以重新触发数据懒加载，因为在viewpager下，fragment不会再次新建并走onCreate的生命周期流程，将从onCreateView开始
         hasFetchData = false;
         isViewPrepared = false;
@@ -115,7 +121,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(this.getClass()+"", getName() + "------>onDestroy");
+        Log.d(this.getClass() + "", getName() + "------>onDestroy");
         if (unbinder != null)
             unbinder.unbind();
     }
@@ -123,7 +129,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(this.getClass()+"", getName() + "------>onDetach");
+        Log.d(this.getClass() + "", getName() + "------>onDetach");
     }
 
     @Override
@@ -157,10 +163,13 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract int getLayout();
 
-    protected void initView(LayoutInflater inflater) {}
+    protected void initView(LayoutInflater inflater) {
+    }
 
 
-    protected void initEvent() {}
+    protected void initEvent() {
+    }
+
     /**
      * 展示弹窗
      *
@@ -194,4 +203,71 @@ public abstract class BaseFragment extends Fragment {
 //        });
         }
     }
+
+    private MaterialDialog dialog;
+
+
+    /**
+     * Material样式进度条 Progress dialog.
+     *
+     * @param title the title
+     */
+    public void progressDialog(final String title) {
+        if (!getActivity().isFinishing()) {
+            ThreadUtils.runOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (dialog == null) {
+                        dialog = new MaterialDialog.Builder(mContext)
+                                .title(title)
+                                .canceledOnTouchOutside(false).cancelable(false)
+                                .customView(R.layout.custom_view, true)
+                                .show();
+                        // 发送延时消息,在handler里面操作,隐藏progressview
+                        mHandler.sendEmptyMessageDelayed(MSG_DISMISS_MATERIAL_PROGRESS, Integer.valueOf(6000));
+                    } else {
+                        dialog.setTitle(title);
+                        if (!dialog.isShowing()) {
+                            dialog.show();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 关闭进度弹窗
+     */
+    public void cancelDialog() {
+        ThreadUtils.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+            }
+        });
+    }
+
+    /**
+     * 创建一个handler处理隐藏
+     */
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_DISMISS_MATERIAL_PROGRESS:
+                    cancelDialog();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    };
+
 }
