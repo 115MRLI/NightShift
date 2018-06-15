@@ -18,7 +18,6 @@ import shift.night.view.contract.ClassificationDetailsContract;
 public class ClassificationDetailsPresenterImpl<T extends ClassificationDetailsContract> implements IClassificationDetailsPresenter<T> {
     private T baseView;
     private TypeModel model;
-
     public ClassificationDetailsPresenterImpl() {
         model = new TypeModel();
     }
@@ -34,20 +33,13 @@ public class ClassificationDetailsPresenterImpl<T extends ClassificationDetailsC
     }
 
     @Override
-    public void getData(String url) {
+    public void getData(String url,String name) {
         if (baseView != null){
-            model.getMenu(url, new TypeModel.TypeMovieCallback() {
+            model.getMenu(url,name ,new TypeModel.TypeMovieCallback() {
                 @Override
                 public void typeDate(List<MovieBean> movies) {
-//                    for (MovieBean movieBean : movies) {
-//                        Log.e("详情", movieBean.toString());
-//                    }
-                    baseView.setAdapter(movies);
-                }
 
-                @Override
-                public void setBanner(List<MovieBean> movies) {
-                    baseView.setBanaImage(movies);
+                    baseView.setAdapter(movies);
                 }
             });
         }

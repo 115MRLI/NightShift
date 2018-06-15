@@ -4,8 +4,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import shift.night.app.App;
@@ -38,5 +40,14 @@ public class NightShiftUtils {
                 }
             }
         });
+    }
+
+    /**
+     * 获取挡前日期精确至月份
+     */
+    public static String getTime() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        String newtime = format.format(new Date());
+        return newtime;
     }
 }

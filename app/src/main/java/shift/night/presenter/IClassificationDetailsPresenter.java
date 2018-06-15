@@ -14,5 +14,5 @@ public interface IClassificationDetailsPresenter<T extends BaseView> extends Bas
      *
      * @param url
      */
-    void getData(String url);
+    void getData(String url,String name);
 }

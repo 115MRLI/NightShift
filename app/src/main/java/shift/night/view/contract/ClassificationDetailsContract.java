@@ -38,10 +38,5 @@ public interface ClassificationDetailsContract extends BaseView {
      */
     void setAdapter(List<MovieBean> movies);
 
-    /**
-     * 设置轮播图
-     *
-     * @param movies
-     */
-    void setBanaImage(List<MovieBean> movies);
+
 }

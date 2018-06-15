@@ -30,10 +30,6 @@ import shift.night.view.widget.GlideImageLoader;
  * @anthor 家佑
  */
 public class ClassificationDetailsFragment extends BaseFragment implements ClassificationDetailsContract {
-    @BindView(R.id.month_ranking)
-    Banner monthRanking;
-    @BindView(R.id.type_str)
-    TextView typeStr;
     @BindView(R.id.typle_list)
     RecyclerView typleList;
 
@@ -43,7 +39,7 @@ public class ClassificationDetailsFragment extends BaseFragment implements Class
 
     private MovieTypeAdapter adapter;
     private List<MovieBean> movies = new ArrayList<>();
-
+    private int n = 1;
     @Override
     protected int getLayout() {
         return R.layout.classification_details_fragment;
@@ -52,15 +48,6 @@ public class ClassificationDetailsFragment extends BaseFragment implements Class
     @Override
     protected void initView(LayoutInflater inflater) {
         super.initView(inflater);
-        //初始化  轮播图
-        monthRanking.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE);
-        monthRanking.setIndicatorGravity(BannerConfig.CENTER);
-        monthRanking.setDelayTime(5000);
-        monthRanking.setImageLoader(new GlideImageLoader());
-        //设置自动轮播，默认为true
-        monthRanking.isAutoPlay(true);
-
-        typeStr.setText(titleMenu.getName());
         presenter = new ClassificationDetailsPresenterImpl();
         presenter.attachView(this);
     }
@@ -77,7 +64,38 @@ public class ClassificationDetailsFragment extends BaseFragment implements Class
         adapter = new MovieTypeAdapter(movies);
         typleList.setLayoutManager(new LinearLayoutManager(getActivity()));
         typleList.setAdapter(adapter);
-        presenter.getData(titleMenu.getActionurl());
+        presenter.getData(titleMenu.getActionurl(), titleMenu.getName());
+        //解决recycleview与滚动布局冲突
+        typleList.setNestedScrollingEnabled(false);
+        adapter.setRMovieTypeListener(new MovieTypeAdapter.MovieTypeListener() {
+            @Override
+            public void itmeClick(MovieBean item) {
+
+            }
+
+            @Override
+            public void onLoad() {
+                switch (titleMenu.getName()) {
+                    case "动作片":
+                        break;
+                    case "喜剧片":
+                        break;
+                    case "爱情片":
+                        break;
+                    case "恐怖片":
+                        break;
+                    case "科幻片":
+                        break;
+                    case "动画片":
+                        break;
+                    case "剧情片":
+                        break;
+                    case "战争片":
+                        break;
+
+                }
+            }
+        });
 
     }
 
@@ -94,19 +112,4 @@ public class ClassificationDetailsFragment extends BaseFragment implements Class
     }
 
 
-    @Override
-    public void setBanaImage(List<MovieBean> movies) {
-        List<String> paths = new ArrayList<>();
-        List<String> titles = new ArrayList<>();
-        for (MovieBean bean:movies){
-            paths.add(bean.getIamgeurl());
-            titles.add(bean.getName());
-        }
-        //设置图片集合
-        monthRanking.setImages(paths);
-        //设置标题集合（当banner样式有显示title时）
-        monthRanking.setBannerTitles(titles);
-        //banner设置方法全部调用完毕时最后调用
-        monthRanking.start();
-    }
 }

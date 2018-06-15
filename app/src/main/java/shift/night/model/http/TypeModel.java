@@ -22,11 +22,11 @@ import shift.night.model.bean.MovieBean;
 public class TypeModel {
     private int CODE = 1;
     private List<MovieBean> movies = new ArrayList<>();
-    private List<MovieBean> movies2 = new ArrayList<>();
-    private List<String> monthRankingurls = new ArrayList<>();
     private TypeMovieCallback typeMovieCallback = null;
+    private String name;
 
-    public void getMenu(final String url, TypeMovieCallback typeMovieCallback) {
+    public void getMenu(final String url, String name, TypeMovieCallback typeMovieCallback) {
+        this.name = name;
         this.typeMovieCallback = typeMovieCallback;
         new Thread() {
             @Override
@@ -37,7 +37,6 @@ public class TypeModel {
                     Elements elements = doc.select("div.lit").select("dl");
                     for (int i = 0; i < elements.size(); i++) {
                         MovieBean movieBean = new MovieBean();
-//                        Log.e("http  biaoqian", elements.get(i).toString());
                         Document document = Jsoup.parse(elements.get(i).html());
                         String elementsImage = document.select("img").attr("src");
                         String actionurl = document.select("a").attr("href");
@@ -57,10 +56,6 @@ public class TypeModel {
                         }
                         movies.add(movieBean);
                     }
-                    Elements monthRankingurl = doc.select("div.cont").select("a");
-                    for (int i = 0; i < monthRankingurl.size(); i++) {
-                        monthRankingurls.add(monthRankingurl.get(i).select("a").attr("href"));
-                    }
 
                     handler.sendEmptyMessage(CODE);
                 } catch (IOException e) {
@@ -79,43 +74,10 @@ public class TypeModel {
             switch (msg.what) {
                 case 1:
                     typeMovieCallback.typeDate(movies);
-                    for (int i = 0; i <5; i++) {
-                        monthRankingAnalysis(monthRankingurls.get(i));
-                    }
-                    break;
-                case 2:
-                    typeMovieCallback.setBanner(movies2);
                     break;
             }
         }
     };
-
-    /**
-     * 解析月排行
-     *
-     * @param monthRanking
-     */
-    private void monthRankingAnalysis(final String monthRanking) {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    Document doc = Jsoup.connect("http://www.qnvod.net" + monthRanking).get();
-                    String elementsImage = doc.select("div.img").select("img").attr("src");
-                    String elementsname = doc.select("div.img").select("img").attr("alt");
-                    Log.e("http  biaoqian", elementsImage + "            " + elementsname);
-                    MovieBean movieBean = new MovieBean();
-                    movieBean.setName(elementsname);
-                    movieBean.setIamgeurl(elementsImage);
-                    movies2.add(movieBean);
-                    handler.sendEmptyMessage(2);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
 
     /**
      * 接口
@@ -128,9 +90,5 @@ public class TypeModel {
          */
         void typeDate(List<MovieBean> movies);
 
-        /**
-         * 设置轮播图
-         */
-        void setBanner(List<MovieBean> movies);
     }
 }

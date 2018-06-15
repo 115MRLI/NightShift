@@ -1,5 +1,4 @@
 package shift.night.view.fragment;
-import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -55,6 +54,8 @@ public class MovieFragment extends BaseFragment {
     @Override
     protected void initEvent() {
         super.initEvent();
+        // 设置缓存页面，当前页面的相邻N各页面都会被缓存
+        viewpager.setOffscreenPageLimit(2);
     }
 
     /**

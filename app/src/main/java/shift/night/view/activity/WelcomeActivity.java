@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import shift.night.R;
 import shift.night.base.BaseActivity;
+import shift.night.util.NightShiftUtils;
+import shift.night.util.SPOperationUtils;
 
 public class WelcomeActivity extends BaseActivity {
     @BindView(R.id.welcome)
@@ -50,6 +53,7 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void getIntentData() {
         super.getIntentData();
+        SPOperationUtils.saveTime();
     }
 
     /**

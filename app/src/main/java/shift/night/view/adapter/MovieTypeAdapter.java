@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -47,7 +48,7 @@ public class MovieTypeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             menuHolder.bindItem(movies.get(position));
             Log.e("监听", "position: " + position + "  itemList.size()  :" + movies.size());
             if (position == movies.size() - 1) {
-//                movies.onLoad(data);
+                listener.onLoad();
             }
         }
     }
@@ -68,7 +69,8 @@ public class MovieTypeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TextView protagonist;
         @BindView(R.id.name)
         TextView name;
-
+        @BindView(R.id.itme)
+        RelativeLayout itmeLin;
         public MovieTypeHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -80,6 +82,12 @@ public class MovieTypeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             region.setText(item.getRegion());
             protagonist.setText(item.getProtagonist());
             name.setText(item.getName());
+            itmeLin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.itmeClick(item);
+                }
+            });
         }
     }
 
@@ -94,9 +102,8 @@ public class MovieTypeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         /**
          * 加载更多
          *
-         * @param data
          */
-        void onLoad(long data);
+        void onLoad();
     }
 
     public void setRMovieTypeListener(MovieTypeListener listener2) {
